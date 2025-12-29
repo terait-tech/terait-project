@@ -1,6 +1,22 @@
 const API_URL = 'https://terait-backend.onrender.com';
 // Safe storage for browser environment
-const storage = window.localStorage || {};
+const storage = typeof window !== 'undefined' ? window.localStorage : {};
+// Firebase API Helper
+async function apiSync(endpoint, method = 'GET', body = null) {
+    try {
+        const options = {
+            method,
+            headers: { 'Content-Type': 'application/json' }
+        };
+        if (body) options.body = JSON.stringify(body);
+        const response = await fetch(`${API_URL}/api${endpoint}`, options);
+        return await response.json();
+    } catch (error) {
+        console.error('API Error:', error);
+        return null;
+    }
+}
+
 
 /* Data structures */
 let currentUser = null; // {role, username, name, employeeId?}
@@ -6346,3 +6362,17 @@ function setupOtherEmployeeForm() {
       if (box) box.classList.toggle("hidden");
     };
   });
+async function syncFromFirebase() {
+    console.log("Syncing with Firebase...");
+    const remoteTickets = await apiSync('/load/tickets');
+    if (remoteTickets && remoteTickets.length > 0) {
+        tickets = remoteTickets;
+        if(typeof renderTickets === 'function') renderTickets();
+    }
+    const remoteAttendance = await apiSync('/load/attendance');
+    if (remoteAttendance && remoteAttendance.length > 0) {
+        attendance = remoteAttendance;
+    }
+}
+// Run sync on load
+window.addEventListener('load', syncFromFirebase);
