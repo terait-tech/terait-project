@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ticket Management System</title>
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Responsive Viewport -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="mobile.css" />
+</head>
+<body>
+
+  <!-- ================= LOGIN PAGE WRAPPER ================= -->
+  <main id="loginPage">
+    <div class="login-container">
+      <section class="card login-card fade-in">
+        <div class="login-header">
+          <img id="appLogo" src="bgr.png" alt="Logo">
+          <h2>Welcome Back</h2>
+          <p>Sign in to your account</p>
+        </div>
+
+
+
+        <div class="form-group">
+          <label for="loginUsername">Username</label>
+          <div class="input-icon-wrap">
+            <i class="fa-regular fa-user"></i>
+            <input id="loginUsername" type="text" placeholder="Enter username" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Password</label>
+          <div class="input-icon-wrap">
+            <i class="fa-solid fa-lock"></i>
+            <input id="loginPassword" type="password" placeholder="Enter password" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="loginRole">Role</label>
+          <div class="input-icon-wrap">
+            <i class="fa-solid fa-briefcase"></i>
+            <select id="loginRole">
+                <option value="">Select Role</option>
+              <option value="admin">Admin</option>
+              <option value="frontoffice">Front Office</option>
+              <option value="helpdesk">Help Desk</option>
+              <option value="finance">Finance</option>
+              <option value="hr">HR</option>
+              <option value="manager">Manager</option>
+              <option value="employee">Employee</option>
+            </select>
+          </div>
+        </div>
+        
+        <button id="loginBtn" class="btn primary full-width">Login</button>
+        <button id="forgotLink" class="btn-link">Forgot Password?</button>
+        <p id="loginError" class="error-msg"></p>
+      </section>
+
+      <!-- Forgot Password Page -->
+      <section id="forgotPasswordPage" class="card hidden fade-in" style="max-width: 420px; margin: 20px auto;">
+        <h3>Forgot Password</h3>
+        <div class="form-group">
+          <label for="fpIdentifier">Username or Email</label>
+          <input id="fpIdentifier" type="text" placeholder="Enter username/email" />
+        </div>
+        <div class="form-group">
+          <label for="fpMobile">Registered Mobile Number</label>
+          <input id="fpMobile" type="tel" placeholder="Enter mobile number" />
+        </div>
+        <div class="form-group">
+          <label for="fpRole">Role</label>
+          <select id="fpRole">
+            <option value="">Select Role</option>
+            <option value="admin">Admin</option>
+            <option value="frontoffice">Front Office</option>
+            <option value="manager">Manager</option>
+            <option value="hr">HR</option>
+            <option value="employee">Employee</option>
+          </select>
+        </div>
+        <div class="btn-group">
+          <button id="sendOtpBtn" class="btn primary">Send OTP</button>
+          <input id="fpOtpInput" type="text" placeholder="OTP" style="width: 80px;" />
+          <button id="verifyOtpBtn" class="btn secondary">Verify</button>
+          <button id="sendResetBtn" class="btn secondary">Send Reset</button>
+          <button id="copyTempBtn" class="btn secondary small">Copy Temp</button>
+        </div>
+        <div class="form-group mt-2">
+          <label style="display:flex; align-items:center; gap:8px;">
+            <input id="fpResetNowToggle" type="checkbox" />
+            <span>Reset now</span>
+          </label>
+        </div>
+        <div id="fpResetNowSection" class="form-group hidden">
+          <input id="fpNewPassword" type="password" placeholder="New Password" class="mb-2" />
+          <input id="fpConfirmPassword" type="password" placeholder="Confirm Password" />
+          <button id="fpResetNowBtn" class="btn primary full-width mt-2">Reset Password Now</button>
+        </div>
+        <p id="fpMsg" class="success-msg"></p>
+        <p id="fpErr" class="error-msg"></p>
+        <button class="btn secondary back-btn full-width mt-2" data-target="loginPage">Back to Login</button>
+      </section>
+    </div>
+  </main>
+
+  <!-- ================= DASHBOARD MAIN WRAPPER ================= -->
+  <!-- ID 'dashboards' is used by app.js to toggle visibility of the app vs login -->
+  <main id="dashboards" class="hidden">
+    <div class="app-layout">
+      
+      <!-- Mobile Overlay -->
+      <div class="mobile-overlay" id="mobileOverlay"></div>
+
+      <!-- Sidebar Navigation -->
+      <aside class="sidebar" id="appSidebar">
+        <div class="sidebar-header">
+          <div class="brand">
+            <i class="fa-solid fa-ticket"></i>
+            <span>TMS</span>
+          </div>
+          <button class="close-sidebar" id="closeSidebarBtn"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <div class="sidebar-user">
+          <div class="user-avatar">
+            <i class="fa-regular fa-user"></i>
+          </div>
+          <div class="user-meta">
+            <span class="welcome-text">Logged in as</span>
+            <!-- App.js updates this specific ID -->
+            <div id="currentUserInfo">Guest</div>
+          </div>
+        </div>
+
+        <div class="sidebar-menu">
+           <div class="menu-label">Menu</div>
+           <div class="menu-item active">
+             <i class="fa-solid fa-gauge"></i> Dashboard
+           </div>
+           <!-- Since app.js manages visibility via Sections, we don't need real links here. -->
+        </div>
+
+        <div class="sidebar-footer">
+          <!-- App.js looks for #logoutBtn to handle logout -->
+          <button id="logoutBtn" class="btn danger full-width">
+            <i class="fa-solid fa-right-from-bracket"></i> Logout
+          </button>
+        </div>
+      </aside>
+
+      <!-- Main Content Area -->
+      <div class="main-content">
+        <!-- Top Header -->
+        <header class="top-header">
+          <button class="hamburger" id="hamburgerBtn">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+          <h1 class="page-title">Dashboard Overview</h1>
+        </header>
+
+        <!-- Content Scrollable Body -->
+        <div class="content-body">
+          
+          <!-- ================= NEW COMPANY PAGE ================= -->
+          <section id="newCompanyPage" class="dashboard hidden">
+            <h2>Add New Company</h2>
+            <div class="card">
+              <div class="grid-2">
+                <div class="form-group"><label>Company Name</label><input id="companyName" type="text" /></div>
+                <div class="form-group"><label>Phone Number</label><input id="companyPhone" type="tel" /></div>
+                <div class="form-group"><label>Email</label><input id="companyEmail" type="email" /></div>
+                <div class="form-group"><label>GST No</label><input id="companyGST" type="text" /></div>
+              </div>
+              <div class="form-group"><label>Address</label><input id="companyAddr1" type="text" placeholder="Line 1" /><input id="companyAddr2" type="text" placeholder="Line 2" style="margin-top:5px"/><input id="companyAddr3" type="text" placeholder="Line 3" style="margin-top:5px"/><input id="companyPincode" type="text" placeholder="Pincode" style="margin-top:5px"/></div>
+              <div class="btn-group">
+                <button id="addCompanyBtn" class="btn primary">Add Company</button>
+                <button id="cancelCompanyBtn" class="btn secondary">Cancel</button>
+              </div>
+              <p id="companyAddMsg" class="success-msg"></p>
+              <p id="companyAddErr" class="error-msg"></p>
+            </div>
+          </section>
+
+          <!-- ================= NEW CALL GROUP PAGE ================= -->
+          <section id="newGroupPage" class="dashboard hidden">
+            <h2>Add / Edit Call Group</h2>
+            <div class="card">
+              <div class="form-group"><label>Group Name</label><input id="groupName" type="text" /></div>
+              <div class="form-group">
+                <label>Call Type</label>
+                <select id="groupCallType">
+                  <option value="">Select Call Type</option>
+                  <option value="Printer Problem">Printer Problem</option>
+                  <option value="Computer Problem">Computer Problem</option>
+                  <option value="Network Issue">Network Issue</option>
+                  <option value="Software Issue">Software Issue</option>
+                  <option value="Hardware Problem">Hardware Problem</option>
+                </select>
+              </div>
+              <div class="form-group"><label>Services (comma separated)</label><input id="groupServices" type="text" /></div>
+              <div class="form-group"><label>Assign Managers</label><div id="groupManagersList" style="max-height:150px; overflow-y:auto; border:1px solid #e2e8f0; padding:10px; border-radius:6px;"></div></div>
+              <div class="btn-group">
+                <button id="addGroupBtn" class="btn primary">Save Group</button>
+                <button id="cancelGroupBtn" class="btn secondary">Cancel</button>
+              </div>
+              <p id="groupAddMsg" class="success-msg"></p>
+              <p id="groupAddErr" class="error-msg"></p>
+            </div>
+          </section>
+
+          <!-- ================= NEW CUSTOMER PAGE ================= -->
+          <section id="newCustomerPage" class="dashboard hidden">
+            <h2>Add New Customer</h2>
+            <div class="card">
+              <div class="grid-2">
+                <div class="form-group"><label>Customer Name</label><input id="newCustName" type="text" /></div>
+                <div class="form-group"><label>Phone Number</label><input id="newCustPhone" type="tel" /></div>
+                <div class="form-group"><label>Email</label><input id="newCustEmail" type="email" /></div>
+                <div class="form-group"><label>Company</label><select id="newCustCompany"><option value="">Select Company</option></select></div>
+              </div>
+              <div class="form-group"><label>Address</label><input id="newCustAddr1" type="text" placeholder="Line 1" /><input id="newCustAddr2" type="text" placeholder="Line 2" style="margin-top:5px"/><input id="newCustAddr3" type="text" placeholder="Line 3" style="margin-top:5px"/><input id="newCustPincode" type="text" placeholder="Pincode" style="margin-top:5px"/></div>
+              <div class="btn-group">
+                <button id="addCustomerBtn" class="btn primary">Add Customer</button>
+                <button id="cancelCustomerBtn" class="btn secondary">Cancel</button>
+              </div>
+              <p id="customerAddMsg" class="success-msg"></p>
+              <p id="customerAddErr" class="error-msg"></p>
+            </div>
+          </section>
+
+          <!-- ================= ADMIN DASHBOARD ================= -->
+          <section id="adminDashboard" class="dashboard admin-theme hidden">
+            <h2>Admin Control Center</h2>
+            
+            <div class="tabs-container">
+              <div class="scrollable-tabs">
+                <button class="admin-nav-tab active" data-tab="overview">Overview</button>
+                <button class="admin-nav-tab" data-tab="employees">Employees</button>
+                <button class="admin-nav-tab" data-tab="managersGroups">Dept & Managers</button>
+                <button class="admin-nav-tab" data-tab="managerEmployees">Mgr Employees</button>
+                <button class="admin-nav-tab" data-tab="otherEmployees">Others</button>
+                <button class="admin-nav-tab" data-tab="customers">Customers</button>
+                <button class="admin-nav-tab" data-tab="tickets">Tickets</button>
+                <button class="admin-nav-tab" data-tab="reports">Reports</button>
+                <button class="admin-nav-tab" data-tab="admins">Admins</button>
+              </div>
+            </div>
+
+            <!-- Tab: Overview -->
+            <div id="adminTabOverview" class="admin-tab-content">
+              <div class="card">
+                <h3>System Overview</h3>
+                <div class="stats-grid">
+                  <div class="stat-box yellow"><div class="label">Employees</div><p id="statTotalEmployees">0</p></div>
+                  <div class="stat-box orange"><div class="label">Managers</div><p id="statTotalManagers">0</p></div>
+                  <div class="stat-box green"><div class="label">Tickets</div><p id="statTotalTickets">0</p></div>
+                  <div class="stat-box blue"><div class="label">Pending</div><p id="statPendingTickets">0</p></div>
+                  <div class="stat-box red"><div class="label">Completed</div><p id="statCompletedTickets">0</p></div>
+                  <div class="stat-box blue"><div class="label">Departments</div><p id="statTotalGroups">0</p></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab: Employees -->
+            <div id="adminTabEmployees" class="admin-tab-content hidden">
+              <div class="card">
+                <h3>Employee Management</h3>
+                <button id="adminAddEmployeeBtn" class="btn primary mb-2">+ Add New Employee</button>
+                <div id="addEmployeeForm" class="hidden form-panel">
+                  <h4>Add/Edit Employee</h4>
+                  <div class="grid-2">
+                    <div class="form-group"><label>Full Name</label><input id="empName" type="text" /></div>
+                    <div class="form-group"><label>Email</label><input id="empEmail" type="email" /></div>
+                    <div class="form-group"><label>Phone</label><input id="empPhone" type="tel" /></div>
+                    <div class="form-group"><label>Password</label><input id="empPassword" type="password" /></div>
+                  </div>
+                  <div class="btn-group">
+                    <button id="saveEmployeeBtn" class="btn primary">Save</button>
+                    <button id="cancelEmployeeBtn" class="btn secondary">Cancel</button>
+                  </div>
+                  <p id="empAddMsg" class="success-msg"></p>
+                  <p id="empAddErr" class="error-msg"></p>
+                </div>
+                <div class="table-responsive">
+                  <table>
+                    <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Manager</th><th>Tasks</th><th>Actions</th></tr></thead>
+                    <tbody id="employeesTableBody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab: Managers & Groups -->
+            <div id="adminTabManagersGroups" class="admin-tab-content hidden">
+              <div class="card">
+                <h3>Managers & Departments</h3>
+                <button id="adminAddManagerBtn" class="btn primary mb-2">+ Add Manager</button>
+                
+                <div id="addManagerForm" class="hidden form-panel">
+                  <h4>Add New Manager</h4>
+                  <div class="grid-2">
+                    <div class="form-group"><label>Name</label><input id="mgrName" type="text" /></div>
+                    <div class="form-group"><label>Email</label><input id="mgrEmail" type="email" /></div>
+                    <div class="form-group"><label>Phone</label><input id="mgrPhone" type="tel" /></div>
+                    <div class="form-group"><label>Password</label><input id="mgrPassword" type="password" /></div>
+                  </div>
+                  <div class="form-group">
+                    <label>Departments</label>
+                    <div id="mgrGroupsUI">
+                      <button id="mgrGroupsToggle" class="btn secondary small">-- Select Departments --</button>
+                      <div id="mgrGroupsMenu" class="hidden" style="border:1px solid #e2e8f0; padding:10px; margin-top:5px; border-radius:6px;">
+                        <div id="mgrGroupsOptions"></div>
+                        <div class="btn-group"><button id="mgrGroupsApplyBtn" class="btn primary small">Apply</button><button id="mgrGroupsCancelBtn" class="btn secondary small">Close</button></div>
+                      </div>
+                    </div>
+                    <select id="mgrCallGroupDropdown" multiple class="hidden"><option value="">-- Select --</option></select>
+                  </div>
+                  <div class="btn-group">
+                    <button id="saveManagerBtn" class="btn primary">Save</button>
+                    <button id="cancelManagerBtn" class="btn secondary">Cancel</button>
+                  </div>
+                  <p id="mgrAddMsg" class="success-msg"></p>
+                  <p id="mgrAddErr" class="error-msg"></p>
+                </div>
+
+                <div class="table-responsive mt-3">
+                  <h4>Managers List</h4>
+                  <table>
+                    <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Depts</th><th>Pending</th><th>Actions</th></tr></thead>
+                    <tbody id="managersTableBody"></tbody>
+                  </table>
+                </div>
+
+                <div id="addGroupForm" class="hidden form-panel mt-3">
+                  <h4>Create Department</h4>
+                  <div class="grid-2">
+                    <div class="form-group"><label>Department Type</label><select id="groupCallType"><option value="">Select</option><option value="IT">IT</option><option value="Technical">Technical</option><option value="Sales">Sales</option></select></div>
+                    <div class="form-group"><label>Name</label><input id="groupName" type="text" /></div>
+                  </div>
+                  <div class="btn-group">
+                    <button id="saveGroupBtn" class="btn primary">Save</button>
+                    <button id="cancelGroupBtn" class="btn secondary">Cancel</button>
+                  </div>
+                  <p id="groupAddMsg" class="success-msg"></p>
+                  <p id="groupAddErr" class="error-msg"></p>
+                </div>
+
+                <div class="table-responsive mt-3">
+                  <h4>Departments</h4>
+                  <table>
+                    <thead><tr><th>ID</th><th>Type</th><th>Name</th><th>Tickets</th><th>Actions</th></tr></thead>
+                    <tbody id="callGroupsTableBody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab: Manager Employees -->
+            <div id="adminTabManagerEmployees" class="admin-tab-content hidden">
+              <div class="card">
+                <h3>Assign Employees to Managers</h3>
+                <div class="grid-2">
+                  <div class="form-group"><label>Select Manager</label><select id="hireMgrSelect"></select></div>
+                  <div class="form-group"><label>Mode</label>
+                    <div style="display:flex; gap:10px; margin-top:5px;">
+                      <label><input type="radio" name="hireMode" id="hireModeExisting" checked /> Existing</label>
+                      <label><input type="radio" name="hireMode" id="hireModeNew" /> Create New</label>
+                    </div>
+                  </div>
+                </div>
+                <div id="hireExistingBox" class="form-group"><label>Select Employee</label><select id="hireEmpSelect"></select></div>
+                <div id="hireNewBox" class="hidden grid-2">
+                  <div class="form-group"><label>Name</label><input id="hireEmpName" type="text" /></div>
+                  <div class="form-group"><label>Email</label><input id="hireEmpEmail" type="email" /></div>
+                  <div class="form-group"><label>Phone</label><input id="hireEmpPhone" type="tel" /></div>
+                  <div class="form-group"><label>Password</label><input id="hireEmpPassword" type="password" /></div>
+                </div>
+                <div class="btn-group">
+                  <button id="hireEmployeeBtn" class="btn primary">Assign</button>
+                  <button id="refreshHireDataBtn" class="btn secondary">Refresh</button>
+                </div>
+                <p id="hireMsg" class="success-msg"></p>
+                <p id="hireErr" class="error-msg"></p>
+                <div class="table-responsive mt-3">
+                  <table><thead><tr><th>Mgr ID</th><th>Manager</th><th>Team Size</th></tr></thead><tbody id="managerEmployeesTableBody"></tbody></table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab: Customers -->
+            <div id="adminTabCustomers" class="admin-tab-content hidden">
+              <div class="card">
+                <h3>Customers</h3>
+                <button id="adminAddCustomerBtn" class="btn primary mb-2">+ Add Customer</button>
+                <div id="addCustomerForm" class="hidden form-panel">
+                  <div class="grid-2">
+                    <div class="form-group"><label>Name</label><input id="custName" type="text" /></div>
+                    <div class="form-group"><label>Email</label><input id="custEmail" type="email" /></div>
+                    <div class="form-group"><label>Phone</label><input id="custPhone" type="tel" /></div>
+                    <div class="form-group"><label>Company</label><select id="custCompany"><option value="">None</option></select></div>
+                  </div>
+                  <div class="btn-group">
+                    <button id="saveCustomerBtn" class="btn primary">Save</button>
+                    <button id="cancelCustomerFormBtn" class="btn secondary">Cancel</button>
+                  </div>
+                  <p id="customerAddMsg" class="success-msg"></p>
+                  <p id="customerAddErr" class="error-msg"></p>
+                </div>
+                <div class="table-responsive">
+                  <table><thead><tr><th>ID</th><th>Name</th><th>Phone</th><th>Email</th><th>Type</th><th>Actions</th></tr></thead><tbody id="customersTableBody"></tbody></table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab: Tickets -->
+            <div id="adminTabTickets" class="admin-tab-content hidden">
+              <div class="card">
+                <h3>All Tickets</h3>
+                <div class="table-responsive">
+                  <table><thead><tr><th>ID</th><th>Customer</th><th>Service</th><th>Status</th><th>Mgr</th><th>Emp</th><th>Date</th></tr></thead><tbody id="adminTicketsTableBody"></tbody></table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab: Reports -->
+            <div id="adminTabReports" class="admin-tab-content hidden">
+               <div class="card">
+                 <h3>Analytics</h3>
+                 <div class="grid-2">
+                   <div class="form-panel"><h4>Status Breakdown</h4><ul id="reportTicketsByStatus" class="simple-list"></ul></div>
+                   <div class="form-panel"><h4>Performance</h4><ul id="reportEmployeePerformance" class="simple-list"></ul></div>
+                 </div>
+               </div>
+               <div class="card mt-3">
+                 <h3>Attendance</h3>
+                 <div class="grid-3">
+                   <div class="form-group"><label>Date</label><input id="adminAttDate" type="date" /></div>
+                   <div class="form-group"><label>Employee</label><select id="adminAttEmpSelect"></select></div>
+                   <div class="form-group"><label>Login</label><input id="adminAttLoginTime" type="time" /></div>
+                   <div class="form-group"><label>Logout</label><input id="adminAttLogoutTime" type="time" /></div>
+                 </div>
+                 <div class="btn-group">
+                   <button id="adminAttSaveBtn" class="btn primary">Save</button>
+                   <button id="adminAttRefreshBtn" class="btn secondary">Refresh</button>
+                 </div>
+                 <p id="adminAttendanceMsg" class="success-msg"></p>
+                 <div class="table-responsive mt-2">
+                   <table><thead><tr><th>Date</th><th>Employee</th><th>Login</th><th>Logout</th></tr></thead><tbody id="adminAttendanceTableBody"></tbody></table>
+                 </div>
+               </div>
+            </div>
+
+            <!-- Tab: Other Employees -->
+            <div id="adminTabOtherEmployees" class="admin-tab-content hidden">
+              <div class="card">
+                <h3>Front Office & Finance Users</h3>
+                <button id="adminAddOtherEmployeeBtn" class="btn primary mb-2">+ Add User</button>
+                <div id="addOtherEmployeeForm" class="hidden form-panel">
+                  <div class="grid-2">
+                    <div class="form-group"><label>Name</label><input id="otherName" type="text" /></div>
+                    <div class="form-group"><label>Email</label><input id="otherEmail" type="email" /></div>
+                    <div class="form-group"><label>Phone</label><input id="otherPhone" type="tel" /></div>
+                    <div class="form-group"><label>Role</label><select id="otherRole"><option value="frontoffice">Front Office</option><option value="finance">Finance</option></select></div>
+                    <div class="form-group"><label>Username</label><input id="otherUsername" type="text" /></div>
+                    <div class="form-group"><label>Password</label><input id="otherPassword" type="password" /></div>
+                  </div>
+                  <div class="btn-group"><button id="saveOtherEmployeeBtn" class="btn primary">Save</button><button id="cancelOtherEmployeeBtn" class="btn secondary">Cancel</button></div>
+                  <p id="otherAddMsg" class="success-msg"></p><p id="otherAddErr" class="error-msg"></p>
+                </div>
+                <div class="table-responsive">
+                  <table><thead><tr><th>ID</th><th>Name</th><th>Phone</th><th>Role</th><th>Actions</th></tr></thead><tbody id="otherEmployeesTableBody"></tbody></table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab: Admins -->
+            <div id="adminTabAdmins" class="admin-tab-content hidden">
+              <div class="card">
+                <h3>Admin Users</h3>
+                <button id="adminAddAdminBtn" class="btn primary mb-2">+ Add Admin</button>
+                <div id="addAdminForm" class="hidden form-panel">
+                  <div class="grid-2">
+                    <div class="form-group"><label>Name</label><input id="admName" type="text" /></div>
+                    <div class="form-group"><label>Email</label><input id="admEmail" type="email" /></div>
+                    <div class="form-group"><label>Username</label><input id="admUsername" type="text" /></div>
+                    <div class="form-group"><label>Password</label><input id="admPassword" type="password" /></div>
+                  </div>
+                  <div class="form-group">
+                    <label><input id="admCanEdit" type="checkbox" checked /> Can Edit</label>
+                    <label><input id="admCanDelete" type="checkbox" checked /> Can Delete</label>
+                  </div>
+                  <div class="btn-group"><button id="saveAdminBtn" class="btn primary">Save</button><button id="cancelAdminBtn" class="btn secondary">Cancel</button></div>
+                  <p id="adminAddMsg" class="success-msg"></p><p id="adminAddErr" class="error-msg"></p>
+                </div>
+                <div class="table-responsive">
+                  <table><thead><tr><th>ID</th><th>Name</th><th>Username</th><th>Permissions</th><th>Actions</th></tr></thead><tbody id="adminsTableBody"></tbody></table>
+                </div>
+                <p id="adminActionMsg" class="success-msg"></p>
+              </div>
+            </div>
+
+            <button id="logoutFromAdmin" class="btn danger mt-3">Logout</button>
+          </section>
+
+          <!-- ================= FRONT OFFICE DASHBOARD ================= -->
+          <section id="frontOfficeDashboard" class="dashboard frontoffice-theme hidden">
+            <h2>Front Office Dashboard</h2>
+            <div class="grid-2 stats-grid">
+              <div class="stat-box blue"><div class="label">My Tickets</div><p id="foStatMyTickets">0</p></div>
+              <div class="stat-box green"><div class="label">Completed</div><p id="foStatCompleted">0</p></div>
+            </div>
+
+            <div class="card mt-3">
+              <h3>Create New Ticket</h3>
+              <div class="form-group">
+                 <label>1. Customer Type</label>
+                 <select id="foCustType"><option value="">Select Type</option><option value="individual">Individual</option><option value="corporate">Corporate</option></select>
+              </div>
+              
+              <div id="foCustomerSelectionSection" class="hidden">
+                 <div class="btn-group mb-2">
+                   <button type="button" id="foExistingCustBtn" class="btn secondary">Existing Customer</button>
+                   <button type="button" id="foNewCustBtn" class="btn primary">New Customer</button>
+                 </div>
+                 
+                 <div id="foExistingCustSection" class="hidden form-group">
+                   <label>Select Customer</label>
+                   <select id="foSelectExistingCust"></select>
+                 </div>
+
+                 <div id="foNewCustForm" class="hidden form-panel">
+                   <div id="foNewCustTypeDisplay" class="menu-label mb-2"></div>
+                   <div class="grid-2">
+                     <div class="form-group"><label>Name</label><input id="foNewCustName" type="text" /></div>
+                     <div class="form-group hidden" id="foCompanyNameDiv"><label>Company Name</label><input id="foNewCompanyName" type="text" /></div>
+                     <div class="form-group"><label>Phone</label><input id="foNewCustPhone" type="tel" /></div>
+                     <div class="form-group"><label>Email</label><input id="foNewCustEmail" type="email" /></div>
+                     <div class="form-group"><label>Address</label><input id="foNewCustAddress" type="text" /></div>
+                     <div class="form-group"><label>GST</label><input id="foNewCustGST" type="text" /></div>
+                     <div class="form-group hidden" id="foContactPersonDiv"><label>Contact Person</label><input id="foNewContactPerson" type="text" /></div>
+                   </div>
+                   <div class="btn-group">
+                     <button type="button" id="foSaveNewCustBtn" class="btn primary">Save Customer</button>
+                     <button type="button" id="foCancelNewCustBtn" class="btn secondary">Cancel</button>
+                   </div>
+                   <p id="foNewCustMsg" class="success-msg"></p><p id="foNewCustErr" class="error-msg"></p>
+                 </div>
+              </div>
+
+              <div id="foIssueDetailsSection" class="hidden mt-3">
+                <h3>2. Issue Details</h3>
+                <div class="form-group">
+                  <label>Call Type</label>
+                  <select id="foCallType"><option value="">Select</option><option value="Installation">Installation</option><option value="Service">Service</option><option value="Complaints">Complaints</option><option value="Sales">Sales</option></select>
+                  <div id="foAutoAssignedManagers" class="form-panel hidden"></div>
+                </div>
+                <div class="form-group"><label>Title</label><input id="foProblemTitle" type="text" /></div>
+                <div class="form-group"><label>Description</label><textarea id="foProblemDesc"></textarea></div>
+                
+                <button id="foCreateTicketBtn" class="btn primary full-width">Create Ticket</button>
+                <p id="foTicketMsg" class="success-msg"></p><p id="foTicketErr" class="error-msg"></p>
+              </div>
+            </div>
+
+            <div class="card mt-3">
+              <h3>My Tickets History</h3>
+              <div class="table-responsive">
+                <table><thead><tr><th>ID</th><th>Customer</th><th>Dept</th><th>Status</th><th>Manager</th><th>Date</th></tr></thead><tbody id="foMyTicketsTableBody"></tbody></table>
+              </div>
+            </div>
+
+            <div class="card mt-3">
+              <h3>Reported Tickets (Payment)</h3>
+              <div class="table-responsive">
+                <table><thead><tr><th>ID</th><th>Customer</th><th>Service</th><th>Date</th><th>Action</th></tr></thead><tbody id="frontOfficeReportedTableBody"></tbody></table>
+              </div>
+            </div>
+
+            <button id="logoutFromFrontOffice" class="btn danger mt-3">Logout</button>
+          </section>
+
+          <!-- ================= HELP DESK DASHBOARD ================= -->
+          <section id="helpDeskDashboard" class="dashboard hidden">
+            <h2>Help Desk</h2>
+            <div class="grid-2 stats-grid">
+              <div class="stat-box orange"><div class="label">Awaiting Dept</div><p id="hdStatAwaitingDept">0</p></div>
+              <div class="stat-box blue"><div class="label">Routed</div><p id="hdStatRouted">0</p></div>
+            </div>
+
+            <div class="card">
+              <h3>Quick Create Ticket</h3>
+              <div class="grid-2">
+                 <div>
+                   <label>Existing Customer</label>
+                   <select id="hdSelectExistingCust"><option value="">Select</option></select>
+                 </div>
+                 <div>
+                   <label>Or New Customer</label>
+                   <input id="hdNewCustName" type="text" placeholder="Name" class="mb-2" />
+                   <input id="hdNewCustEmail" type="email" placeholder="Email" class="mb-2" />
+                   <input id="hdNewCustPhone" type="tel" placeholder="Phone" class="mb-2" />
+                   <button id="hdAddCustomerBtn" class="btn secondary small">Create</button>
+                 </div>
+              </div>
+              <div class="form-group mt-2">
+                <label>Call Type</label>
+                <select id="hdNewCallType"><option value="">Select</option><option value="Installation">Installation</option><option value="Service">Service</option><option value="Complaints">Complaints</option><option value="Sales">Sales</option></select>
+              </div>
+              <div class="form-group"><label>Title</label><input id="hdNewTitle" type="text" /></div>
+              <div class="form-group"><label>Desc</label><textarea id="hdNewDesc"></textarea></div>
+              <button id="hdCreateTicketBtn" class="btn primary">Create</button>
+              <p id="hdCreateMsg" class="success-msg"></p><p id="hdCreateErr" class="error-msg"></p>
+            </div>
+
+            <div class="card mt-3">
+              <h3>Awaiting Department Selection</h3>
+              <div class="table-responsive">
+                <table><thead><tr><th>ID</th><th>Raised By</th><th>Customer</th><th>Call Type</th><th>Status</th><th>Action</th></tr></thead><tbody id="helpDeskTicketsTableBody"></tbody></table>
+              </div>
+            </div>
+
+            <div id="helpDeskProcessCard" class="card hidden mt-3">
+              <h3>Process Ticket</h3>
+              <div class="grid-2">
+                <div class="form-group"><label>Ticket</label><input id="hdTicketId" readonly /></div>
+                <div class="form-group"><label>Customer</label><input id="hdCustomer" readonly /></div>
+                <div class="form-group"><label>Department</label><select id="hdDepartment"><option value="">Select Dept</option><option value="IT">IT</option><option value="Technical">Technical</option><option value="CCTV">CCTV</option><option value="Biometric">Biometric</option><option value="Sales">Sales</option></select></div>
+                <div class="form-group"><label>Product</label><input id="hdProduct" /></div>
+                <div class="form-group"><label>Model</label><input id="hdModel" /></div>
+                <div class="form-group"><label>Serial</label><input id="hdSerial" /></div>
+              </div>
+              <div class="form-group"><label>Remarks</label><textarea id="hdRemarks"></textarea></div>
+              <div class="form-group"><label>Source</label><select id="hdSourceType"><option value="Phone">Phone</option><option value="Email">Email</option><option value="Walk-in">Walk-in</option></select></div>
+              <div class="form-group" id="hdReferredByBox" style="display:none"><label>Referred By</label><input id="hdReferredByText" readonly /></div>
+              
+              <!-- Hidden fields expected by JS -->
+              <input id="hdConfig" type="hidden" /><input id="hdYear" type="hidden" /><input id="hdAdditional" type="hidden" />
+
+              <div class="btn-group">
+                <button id="hdSendToDeptBtn" class="btn primary">Send to Department</button>
+                <button id="hdCancelBtn" class="btn secondary">Cancel</button>
+              </div>
+              <p id="hdMsg" class="success-msg"></p><p id="hdErr" class="error-msg"></p>
+            </div>
+            <button id="logoutFromHelpDesk" class="btn danger mt-3">Logout</button>
+          </section>
+
+          <!-- ================= MANAGER DASHBOARD ================= -->
+          <section id="managerDashboard" class="dashboard manager-theme hidden">
+            <h2>Manager Dashboard</h2>
+            <div class="stats-grid">
+               <div class="stat-box orange"><div class="label">Pending Assign</div><p id="mgrStatPendingAssign">0</p></div>
+               <div class="stat-box blue"><div class="label">Assigned</div><p id="mgrStatAssigned">0</p></div>
+               <div class="stat-box red"><div class="label">Sales Approval</div><p id="mgrStatSalesApproval">0</p></div>
+               <div class="stat-box green"><div class="label">Handover</div><p id="mgrStatHandover">0</p></div>
+            </div>
+
+            <div class="card mt-3">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h3>New Ticket</h3>
+                <button id="mgrNewTicketBtn" class="btn primary small">+ Create</button>
+              </div>
+              <div id="mgrNewTicketForm" class="hidden form-panel mt-2">
+                <div class="grid-2">
+                  <div class="form-group"><label>Customer</label><select id="mgrSelectCustomer"></select></div>
+                  <div class="form-group"><label>Type</label><select id="mgrCallType"><option value="">Select</option><option value="Installation">Installation</option><option value="Service">Service</option><option value="Complaints">Complaints</option><option value="Sales">Sales</option></select></div>
+                </div>
+                <div class="form-group"><button id="mgrNewCustomerBtn" class="btn secondary small">New Customer</button></div>
+                
+                <div id="mgrNewCustomerForm" class="hidden form-panel">
+                    <div class="form-group"><label>Type</label><select id="mgrCustType"><option value="individual">Individual</option><option value="corporate">Corporate</option></select></div>
+                    <div id="mgrIndividualNameBox" class="form-group"><label>Name</label><input id="mgrCustName" /></div>
+                    <div id="mgrCompanyNameBox" class="form-group hidden"><label>Company</label><input id="mgrCompanyName" /></div>
+                    <div id="mgrContactPersonBox" class="form-group hidden"><label>Contact</label><input id="mgrContactPerson" /></div>
+                    <div class="grid-2">
+                        <div class="form-group"><label>Phone</label><input id="mgrCustPhone" type="tel" /></div>
+                        <div class="form-group"><label>Email</label><input id="mgrCustEmail" type="email" /></div>
+                    </div>
+                    <div class="form-group"><label>Address</label><input id="mgrCustAddress" /></div>
+                    <div id="mgrCustGSTBox" class="form-group hidden"><label>GST</label><input id="mgrCustGST" /></div>
+                    <div class="btn-group">
+                        <button id="mgrSaveNewCustomerBtn" class="btn primary">Save Cust</button>
+                        <button id="mgrCancelNewCustomerBtn" class="btn secondary">Cancel</button>
+                    </div>
+                    <p id="mgrNewCustomerMsg" class="success-msg"></p><p id="mgrNewCustomerErr" class="error-msg"></p>
+                </div>
+                
+                <div class="form-group"><label>Title</label><input id="mgrProblemTitle" /></div>
+                <div class="form-group"><label>Desc</label><textarea id="mgrProblemDesc"></textarea></div>
+                <!-- Hidden inputs expected by JS -->
+                <input id="mgrReferredName" type="hidden" />
+
+                <div class="btn-group">
+                   <button id="mgrCreateTicketBtn" class="btn primary">Create Ticket</button>
+                   <button id="mgrCancelCreateBtn" class="btn secondary">Cancel</button>
+                </div>
+                <p id="mgrNewTicketMsg" class="success-msg"></p><p id="mgrNewTicketErr" class="error-msg"></p>
+              </div>
+            </div>
+
+            <p id="mgrActionMsg" class="success-msg"></p><p id="mgrActionErr" class="error-msg"></p>
+
+            <div class="card mt-3">
+              <h3>Pending Assignment</h3>
+              <div class="table-responsive">
+                <table><thead><tr><th>ID</th><th>Customer</th><th>Type</th><th>Group</th><th>Desc</th><th>Date</th><th>Assign</th><th>Action</th></tr></thead><tbody id="pendingTicketsTableBody"></tbody></table>
+              </div>
+            </div>
+
+            <div class="card mt-3">
+              <h3>Assigned Tickets</h3>
+              <div class="table-responsive">
+                <table><thead><tr><th>ID</th><th>Customer</th><th>Desc</th><th>Emp</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody id="assignedTicketsTableBody"></tbody></table>
+              </div>
+            </div>
+
+            <div class="card mt-3">
+              <h3>Sales Approval</h3>
+              <div class="table-responsive">
+                <table><thead><tr><th>ID</th><th>Customer</th><th>Quote Time</th><th>Desc</th><th>Photo</th><th>Action</th></tr></thead><tbody id="salesApprovalTableBody"></tbody></table>
+              </div>
+            </div>
+            
+            <div class="card mt-3">
+              <h3>Sales Verification</h3>
+              <div class="table-responsive">
+                 <table><thead><tr><th>ID</th><th>Customer</th><th>Emp</th><th>Action</th></tr></thead><tbody id="salesVerificationTableBody"></tbody></table>
+              </div>
+            </div>
+
+            <div class="card mt-3">
+              <h3>My Employees</h3>
+              <select id="managerEmployeesSelect" multiple style="height:100px; width:100%"></select>
+              <ul id="managerEmployeesList" class="simple-list mt-2"></ul>
+            </div>
+
+            <div class="card mt-3">
+              <h3>Task Progress Reports</h3>
+              <div class="table-responsive">
+                 <table><thead><tr><th>ID</th><th>Customer</th><th>Emp</th><th>Status</th><th>%</th><th>Start</th><th>Details</th></tr></thead><tbody id="taskReportsTableBody"></tbody></table>
+              </div>
+            </div>
+
+            <div class="card mt-3">
+               <h3>Handover Approvals</h3>
+               <div class="table-responsive">
+                 <table><thead><tr><th>ID</th><th>Emp</th><th>Materials</th><th>Action</th></tr></thead><tbody id="handoverApprovalsTableBody"></tbody></table>
+               </div>
+            </div>
+            
+            <button id="logoutFromManager" class="btn danger mt-3">Logout</button>
+          </section>
+
+          <!-- ================= EMPLOYEE DASHBOARD ================= -->
+          <section id="employeeDashboard" class="dashboard employee-theme hidden">
+            <h2>Employee Dashboard</h2>
+            <div class="stats-grid">
+               <div class="stat-box orange"><div class="label">Pending</div><p id="empStatPending">0</p></div>
+               <div class="stat-box blue"><div class="label">In Progress</div><p id="empStatInProgress">0</p></div>
+               <div class="stat-box green"><div class="label">Reported</div><p id="empStatReported">0</p></div>
+            </div>
+
+            <div class="card mt-3">
+              <h3>Attendance</h3>
+              <div class="btn-group">
+                <button id="empLoginBtn" class="btn primary">Login</button>
+                <button id="empLogoutBtn" class="btn secondary">Logout</button>
+              </div>
+              <p id="empAttendanceMsg" class="success-msg"></p><p id="empAttendanceErr" class="error-msg"></p>
+              <ul id="empAttendanceTodayList" class="simple-list mt-2"></ul>
+            </div>
+
+            <div class="card mt-3">
+               <h3>Work Mode</h3>
+               <div class="btn-group">
+                  <button id="showTaskModeBtn" class="btn primary">Task Mode</button>
+                  <button id="showSiteVisitModeBtn" class="btn secondary">Site Visit Mode</button>
+               </div>
+            </div>
+
+            <!-- Pending Tasks -->
+            <div id="employeePendingCard" class="card mt-3">
+              <h3>Pending (Accept/Reject)</h3>
+              <div class="table-responsive">
+                <table><thead><tr><th>ID</th><th>Customer</th><th>Loc</th><th>Type</th><th>Desc</th><th>Action</th></tr></thead><tbody id="employeePendingTasksTableBody"></tbody></table>
+              </div>
+            </div>
+            
+            <!-- Response Modal (In-DOM structure) -->
+            <div id="taskResponseModal" class="card modal-card hidden">
+               <h3>Respond to Task</h3>
+               <div id="taskResponseContent"></div>
+               <div class="btn-group mt-2">
+                 <button id="acceptTaskBtn" class="btn primary">Accept</button>
+                 <button id="rejectTaskBtn" class="btn danger">Reject</button>
+                 <button id="swapTaskBtn" class="btn warning">Swap</button>
+               </div>
+               <div id="swapReasonDiv" class="hidden mt-2">
+                  <label>Reason</label><textarea id="swapReason"></textarea>
+                  <button id="submitSwapBtn" class="btn primary mt-2">Submit Swap</button>
+               </div>
+               <button id="closeTaskResponseBtn" class="btn secondary full-width mt-2">Cancel</button>
+               <p id="taskResponseMsg" class="success-msg"></p><p id="taskResponseErr" class="error-msg"></p>
+            </div>
+
+            <!-- Active Tasks -->
+            <div id="employeeActiveCard" class="card mt-3">
+               <h3>Active Tasks</h3>
+               <div class="table-responsive">
+                 <table><thead><tr><th>ID</th><th>Customer</th><th>Type</th><th>Est</th><th>Status</th><th>Action</th></tr></thead><tbody id="employeeActiveTasksTableBody"></tbody></table>
+               </div>
+            </div>
+
+            <!-- Work Panel -->
+            <div id="taskWorkPanel" class="card hidden mt-3" style="border-left: 4px solid var(--warning);">
+               <h3>Work Tracking</h3>
+               <div class="info-grid mb-2">
+                  <div><small>ID</small><h4 id="workTicketId"></h4></div>
+                  <div><small>Loc</small><p id="workCustomerLocation"></p></div>
+                  <div><small>Type</small><p id="workServiceType"></p></div>
+                  <div><small>Est</small><p id="workEstimatedDuration"></p></div>
+               </div>
+               
+               <div class="stats-grid">
+                 <div class="stat-box"><div class="label">Start</div><input id="workStartTime" type="time" readonly style="border:none; text-align:center;" /></div>
+                 <div class="stat-box"><div class="label">Status</div><p id="workCurrentStatus" style="font-size:1rem;">...</p></div>
+                 <div class="stat-box"><div class="label">Total</div><p id="workTotalTime" style="font-size:1rem;">0h 0m</p></div>
+               </div>
+
+               <div class="form-group mt-3">
+                  <div class="btn-group">
+                     <button id="startBreakBtn" class="btn secondary">Start Break</button>
+                     <button id="endBreakBtn" class="btn secondary hidden">End Break</button>
+                  </div>
+                  <div id="breakInfo" class="hidden form-panel"><span id="breakStatus"></span></div>
+                  <div id="breakHistory" class="simple-list"></div>
+               </div>
+
+               <div class="form-group">
+                  <label>Update Status</label>
+                  <select id="workProgressUpdate"><option value="">Select</option><option value="Started">Started</option><option value="Diagnosis">Diagnosis</option><option value="In-Progress">In-Progress</option><option value="Testing">Testing</option><option value="Completed">Completed</option></select>
+               </div>
+               <div class="form-group"><label>Blockers</label><textarea id="workBlockers"></textarea></div>
+               <div class="form-group"><label>Notes</label><textarea id="workNotes"></textarea></div>
+               <div class="form-group"><label>Est Time (mins)</label><input id="estimatedTimeToComplete" type="number" /></div>
+               <div class="form-group"><label>Photo</label><input id="workPhotoEvidence" type="file" /><div id="workPhotoPreview"></div></div>
+
+               <div class="btn-group">
+                  <button id="submitProgressUpdateBtn" class="btn primary">Update</button>
+                  <button id="completeTaskBtn" class="btn success">Mark Complete</button>
+                  <button id="closeWorkPanelBtn" class="btn secondary">Close</button>
+               </div>
+               <p id="workUpdateMsg" class="success-msg"></p><p id="workUpdateErr" class="error-msg"></p>
+            </div>
+
+            <!-- Engineer Update Section -->
+            <div id="engineerUpdateSection" class="card hidden mt-3">
+               <h3>Final Report</h3>
+               <div class="grid-2">
+                  <div class="form-group"><label>Start</label><input id="engTaskStart" type="datetime-local" /></div>
+                  <div class="form-group"><label>End</label><input id="engTaskEnd" type="datetime-local" /></div>
+               </div>
+               <div class="form-group">
+                  <label>Outcome</label>
+                  <select id="engStatus"><option value="">Select</option><option value="Complete">Complete</option><option value="Incomplete">Incomplete</option></select>
+               </div>
+               
+               <div id="engCompleteFields" class="hidden">
+                  <div class="form-group"><label>DC No</label><input id="engDCNo" /></div>
+                  <div class="form-group"><label>Remarks</label><textarea id="engRemarks"></textarea></div>
+                  <div class="form-group"><label>Materials</label><textarea id="engMaterialsUsed"></textarea></div>
+               </div>
+
+               <div id="engIncompleteFields" class="hidden">
+                  <div class="form-group"><label>Reason</label><textarea id="engPendingReason"></textarea></div>
+                  <div class="form-group"><label>Next Follow-up</label><input id="engNextFollowUp" type="date" /></div>
+               </div>
+
+               <button id="engSubmitUpdateBtn" class="btn primary">Submit Report</button>
+               <p id="engUpdateMsg" class="success-msg"></p><p id="engUpdateErr" class="error-msg"></p>
+            </div>
+
+            <!-- Site Visit Section -->
+            <div id="siteVisitSection" class="card hidden mt-3">
+               <h3>Site Visit Report</h3>
+               <div class="form-group"><label>Ticket</label><select id="siteVisitSelectTicket"></select></div>
+               <div class="form-group"><label>Status</label><select id="siteVisitedSelect"><option value="">Select</option><option value="OnSite">Yes, at site</option><option value="OnTheWay">On the way</option><option value="NotOnSite">No</option></select></div>
+               <div class="form-group"><label>Quotation Desc</label><textarea id="siteVisitQuotation"></textarea></div>
+               <div class="form-group"><label>Photo</label><input id="siteVisitPhoto" type="file" /><div id="siteVisitPhotoPreview"></div></div>
+               
+               <button id="siteVisitSubmitBtn" class="btn primary">Submit</button>
+               <p id="siteVisitMsg" class="success-msg"></p><p id="siteVisitErr" class="error-msg"></p>
+            </div>
+
+            <!-- Sales Report Section -->
+            <div id="salesReportSection" class="card hidden mt-3">
+               <h3>Sales Verification</h3>
+               <div class="form-group"><label>Ticket</label><select id="salesReportSelectTicket"></select></div>
+               <div class="form-group"><label>Desc</label><textarea id="salesReportDesc"></textarea></div>
+               <div class="form-group"><label>Photo</label><input id="salesReportPhoto" type="file" /><div id="salesReportPhotoPreview"></div></div>
+               
+               <div class="btn-group">
+                  <button id="salesReportVerifyBtn" class="btn success">Verified</button>
+                  <button id="salesReportDeclineBtn" class="btn danger">Declined</button>
+               </div>
+               <p id="salesReportMsg" class="success-msg"></p><p id="salesReportErr" class="error-msg"></p>
+            </div>
+
+            <div id="employeeCompletedCard" class="card mt-3">
+               <h3>Completed History</h3>
+               <div class="table-responsive">
+                 <table><thead><tr><th>ID</th><th>Customer</th><th>Type</th><th>Date</th><th>Time</th><th>View</th></tr></thead><tbody id="employeeCompletedTasksTableBody"></tbody></table>
+               </div>
+            </div>
+
+            <div id="employeeHistoryCard" class="card mt-3">
+               <h3>My Stats</h3>
+               <div class="stats-grid">
+                  <div class="stat-box yellow"><div class="label">Today</div><p id="tasksCompletedToday">0</p></div>
+                  <div class="stat-box green"><div class="label">Hours</div><p id="totalWorkHoursToday">0h</p></div>
+                  <div class="stat-box blue"><div class="label">Avg Time</div><p id="avgTimePerTask">--</p></div>
+                  <div class="stat-box blue"><div class="label">Month</div><p id="totalTasksMonth">0</p></div>
+               </div>
+            </div>
+            
+            <button id="logoutFromEmployee" class="btn danger mt-3">Logout</button>
+          </section>
+
+          <!-- ================= HR DASHBOARD ================= -->
+          <section id="hrDashboard" class="dashboard hidden">
+            <h2>HR Dashboard</h2>
+            
+            <div class="card">
+               <h3>Attendance Manager</h3>
+               <div class="grid-3">
+                 <div class="form-group"><label>Date</label><input id="hrAttDate" type="date" /></div>
+                 <div class="form-group"><label>Emp</label><select id="hrAttEmpSelect"></select></div>
+                 <div class="form-group"><label>Login</label><input id="hrAttLoginTime" type="time" /></div>
+                 <div class="form-group"><label>Logout</label><input id="hrAttLogoutTime" type="time" /></div>
+                 <div class="form-group"><label>Login Grace (mins)</label><input id="hrLoginGraceTime" type="number" value="0" /></div>
+                 <div class="form-group"><label>Logout Grace (mins)</label><input id="hrLogoutGraceTime" type="number" value="0" /></div>
+               </div>
+               <div class="btn-group">
+                  <button id="hrAttSaveBtn" class="btn primary">Save</button>
+                  <button id="hrAttRefreshBtn" class="btn secondary">Refresh</button>
+               </div>
+               <p id="hrAttendanceMsg" class="success-msg"></p><p id="hrAttendanceErr" class="error-msg"></p>
+               <div class="table-responsive mt-2">
+                 <table><thead><tr><th>Date</th><th>Emp</th><th>Login</th><th>Logout</th></tr></thead><tbody id="hrAttendanceTableBody"></tbody></table>
+               </div>
+            </div>
+
+            <div class="card mt-3">
+               <h3>Employees</h3>
+               <div class="table-responsive">
+                  <table><thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>User</th><th>Edit</th></tr></thead><tbody id="hrEmployeesTableBody"></tbody></table>
+               </div>
+               <div id="hrEmpEditForm" class="hidden form-panel mt-2">
+                  <div class="grid-2">
+                     <div class="form-group"><label>Name</label><input id="hrEmpEditName" /></div>
+                     <div class="form-group"><label>Email</label><input id="hrEmpEditEmail" /></div>
+                     <div class="form-group"><label>Phone</label><input id="hrEmpEditPhone" /></div>
+                     <div class="form-group"><label>User</label><input id="hrEmpEditUsername" /></div>
+                     <div class="form-group"><label>Pwd</label><input id="hrEmpEditPassword" type="password" /></div>
+                  </div>
+                  <div class="btn-group">
+                     <button id="hrEmpEditSaveBtn" class="btn primary">Save</button>
+                     <button id="hrEmpEditCancelBtn" class="btn secondary">Cancel</button>
+                  </div>
+                  <p id="hrEmpEditMsg" class="success-msg"></p><p id="hrEmpEditErr" class="error-msg"></p>
+               </div>
+            </div>
+
+            <div class="card mt-3">
+               <h3>Add New Employee</h3>
+               <div class="form-panel mt-2">
+                  <div class="grid-2">
+                     <div class="form-group"><label>Name</label><input id="hrNewEmpName" type="text" required /></div>
+                     <div class="form-group"><label>Email</label><input id="hrNewEmpEmail" type="email" required /></div>
+                     <div class="form-group"><label>Mobile No</label><input id="hrNewEmpMobile" type="tel" required /></div>
+                     <div class="form-group"><label>Role</label><input id="hrNewEmpRole" type="text" required /></div>
+                     <div class="form-group"><label>Employee ID</label><input id="hrNewEmpId" type="text" required /></div>
+                     <div class="form-group"><label>Blood Group</label><input id="hrNewEmpBloodGroup" type="text" /></div>
+                     <div class="form-group"><label>Emergency Contact</label><input id="hrNewEmpEmergencyContact" type="tel" /></div>
+                     <div class="form-group"><label>Address</label><input id="hrNewEmpAddress" type="text" /></div>
+                     <div class="form-group"><label>Father/Guardian Name</label><input id="hrNewEmpFatherName" type="text" /></div>
+                     <div class="form-group"><label>Aadhaar Number</label><input id="hrNewEmpAadhaar" type="text" /></div>
+                     <div class="form-group"><label>PAN Number</label><input id="hrNewEmpPan" type="text" /></div>
+                     <div class="form-group"><label>ESI/PF (Optional)</label><input id="hrNewEmpEsiPf" type="text" /></div>
+                     <div class="form-group"><label>Salary</label><input id="hrNewEmpSalary" type="number" required /></div>
+                  </div>
+                  <div class="btn-group">
+                     <button id="hrNewEmpSaveBtn" class="btn primary">Save Employee</button>
+                     <button id="hrNewEmpCancelBtn" class="btn secondary">Cancel</button>
+                  </div>
+                  <p id="hrNewEmpMsg" class="success-msg"></p><p id="hrNewEmpErr" class="error-msg"></p>
+               </div>
+            </div>
+
+            <div class="card mt-3">
+               <h3>Managers</h3>
+               <div class="table-responsive">
+                  <table><thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Depts</th><th>Edit</th></tr></thead><tbody id="hrManagersTableBody"></tbody></table>
+               </div>
+               <div id="hrMgrEditForm" class="hidden form-panel mt-2">
+                  <div class="grid-2">
+                     <div class="form-group"><label>Name</label><input id="hrMgrEditName" /></div>
+                     <div class="form-group"><label>Email</label><input id="hrMgrEditEmail" /></div>
+                     <div class="form-group"><label>Phone</label><input id="hrMgrEditPhone" /></div>
+                     <div class="form-group"><label>User</label><input id="hrMgrEditUsername" /></div>
+                     <div class="form-group"><label>Pwd</label><input id="hrMgrEditPassword" type="password" /></div>
+                     <div class="form-group"><label>Depts</label><input id="hrMgrEditDepartments" /></div>
+                  </div>
+                  <div class="btn-group">
+                     <button id="hrMgrEditSaveBtn" class="btn primary">Save</button>
+                     <button id="hrMgrEditCancelBtn" class="btn secondary">Cancel</button>
+                  </div>
+                  <p id="hrMgrEditMsg" class="success-msg"></p><p id="hrMgrEditErr" class="error-msg"></p>
+               </div>
+            </div>
+
+            <button id="logoutFromHR" class="btn danger mt-3">Logout</button>
+          </section>
+
+          <!-- ================= FINANCE DASHBOARD ================= -->
+          <section id="financeDashboard" class="dashboard hidden">
+            <h2>Finance Dashboard</h2>
+            <div class="grid-3 stats-grid">
+               <div class="stat-box orange"><div class="label">Awaiting</div><p id="finStatAwaiting">0</p></div>
+               <div class="stat-box red"><div class="label">Part Pay</div><p id="finStatPart">0</p></div>
+               <div class="stat-box green"><div class="label">Full Pay</div><p id="finStatFull">0</p></div>
+            </div>
+
+            <div class="card mt-3">
+              <h3>Tickets Awaiting Payment</h3>
+              <div class="table-responsive">
+                <table><thead><tr><th>ID</th><th>Customer</th><th>Service</th><th>Amt</th><th>Status</th><th>Action</th></tr></thead><tbody id="financeTicketsTableBody"></tbody></table>
+              </div>
+            </div>
+            
+            <button id="logoutFromFinance" class="btn danger mt-3">Logout</button>
+          </section>
+
+          <!-- ================= PAYMENT PAGE ================= -->
+          <section id="paymentPage" class="dashboard hidden">
+            <h2>Payment & Feedback</h2>
+            <div class="card">
+               <div class="info-grid mb-2">
+                  <div><small>Ticket</small><h4 id="payTicketId"></h4></div>
+                  <div><small>Customer</small><p id="payCustomer"></p></div>
+                  <div><small>Service</small><p id="payService"></p></div>
+                  <div><small>Amount</small><p id="payAmount"></p></div>
+               </div>
+
+               <div class="form-group">
+                  <h3>Accounts Update</h3>
+                  <div class="grid-2">
+                     <div class="form-group"><label>Invoice Date</label><input id="invoiceDate" type="date" /></div>
+                     <div class="form-group"><label>Billed Amount</label><input id="billedAmount" type="number" /></div>
+                     <div class="form-group"><label>Received</label><input id="paymentReceivedAmount" type="number" /></div>
+                     <div class="form-group"><label>Status</label><select id="paymentStatusSelect"><option value="Pending">Pending</option><option value="Part Payment">Part Payment</option><option value="Full Payment">Full Payment</option></select></div>
+                  </div>
+                  <div class="btn-group">
+                     <button id="payNowBtn" class="btn primary">Save Update</button>
+                  </div>
+                  <p id="payMsg" class="success-msg"></p>
+               </div>
+               
+               <div class="mt-2"><ul id="paymentHistoryList" class="simple-list"></ul></div>
+               
+               <div class="form-group mt-3">
+                  <label>Finance Confirmation Note</label>
+                  <input id="financeConfirmText" type="text" />
+               </div>
+               <div class="form-group"><label>Rating</label><select id="feedbackRating"><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select></div>
+               <div class="form-group"><label>Comments</label><textarea id="feedbackComment"></textarea></div>
+               
+               <div class="btn-group">
+                  <button id="submitFeedbackBtn" class="btn success">Confirm & Complete</button>
+                  <button id="backToStatusBtn" class="btn secondary">Back</button>
+               </div>
+               <p id="feedbackMsg" class="success-msg"></p>
+            </div>
+          </section>
+
+        </div> <!-- End Content Body -->
+      </div> <!-- End Main Content -->
+    </div> <!-- End App Layout -->
+  </main>
+  
+  <!-- ================= LOGIC SCRIPTS ================= -->
+  <!-- Main Application Logic (Unchanged) -->
+  <script src="app.js"></script>
+
+  <!-- Separate UI Logic for Sidebar Toggle (Since we can't edit app.js) -->
+  <script>
+    const sidebar = document.getElementById('appSidebar');
+    const overlay = document.getElementById('mobileOverlay');
+    const hamBtn = document.getElementById('hamburgerBtn');
+    const closeBtn = document.getElementById('closeSidebarBtn');
+
+    function toggleSidebar() {
+        if(sidebar) sidebar.classList.toggle('active');
+        if(overlay) overlay.classList.toggle('active');
+    }
+
+    if(hamBtn) hamBtn.addEventListener('click', toggleSidebar);
+    if(closeBtn) closeBtn.addEventListener('click', toggleSidebar);
+    if(overlay) overlay.addEventListener('click', toggleSidebar);
+  </script>
+</body>
+</html>

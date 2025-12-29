@@ -1,0 +1,157 @@
+/* mobile.css - Optimized for Touch & Small Screens */
+
+/* ================= TABLET & MOBILE (Max 992px) ================= */
+@media (max-width: 992px) {
+  /* Sidebar Logic */
+  .sidebar {
+    position: fixed; top: 0; left: 0; height: 100%;
+    transform: translateX(-100%); /* Hidden by default */
+    width: 280px; z-index: 100;
+  }
+  .sidebar.active { transform: translateX(0); }
+  
+  .main-content { margin-left: 0; }
+  
+  .top-header { padding: 0 1rem; }
+  .hamburger { display: block; }
+  .close-sidebar { display: block; background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; }
+  
+  /* Mobile Overlay */
+  .mobile-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.6); backdrop-filter: blur(2px);
+    z-index: 90; display: none; opacity: 0; transition: opacity 0.3s;
+  }
+  .mobile-overlay.active { display: block; opacity: 1; }
+}
+
+/* ================= MOBILE VIEW (Max 768px) ================= */
+@media (max-width: 768px) {
+  
+  :root {
+    --header-height: 60px;
+  }
+
+  /* Padding Adjustments */
+  .content-body { padding: 1rem; }
+  .card { padding: 1.25rem; border-radius: 12px; }
+  
+  /* Stack Grids */
+  .grid-2, .grid-3 { grid-template-columns: 1fr; gap: 1rem; }
+  
+  /* Stats Grid: Keep 2 columns for density, looks better */
+  .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .stat-box { padding: 1rem; }
+  .stat-box p { font-size: 1.6rem; }
+
+  /* Login Page */
+  .login-card { padding: 2rem 1.5rem; width: 100%; }
+  
+  /* ================= HANDY "CARD VIEW" FOR TABLES ================= */
+  /* This prevents horizontal scrolling ("swiping left/right") */
+  
+  .table-responsive {
+    border: none; overflow: visible; background: transparent;
+  }
+  
+  table, thead, tbody, th, td, tr { 
+    display: block; 
+  }
+  
+  /* Hide the table header */
+  thead tr { 
+    position: absolute; top: -9999px; left: -9999px; 
+  }
+  
+  tbody tr {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    margin-bottom: 15px;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+    position: relative;
+  }
+  
+  td {
+    border: none;
+    border-bottom: 1px dashed #f1f5f9;
+    position: relative;
+    padding: 8px 0;
+    padding-left: 0; /* Reset */
+    display: flex;
+    justify-content: space-between; /* Label on left, Value on right */
+    align-items: center;
+    text-align: right;
+    font-size: 0.95rem;
+  }
+  
+  td:last-child {
+    border-bottom: none;
+    display: flex;
+    flex-direction: column; /* Stack buttons */
+    gap: 8px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #f1f5f9;
+  }
+
+  /* Since app.js doesn't provide data-labels, we use CSS counters or basic formatting.
+     Ideally, we modify JS, but constraint says NO JS changes. 
+     We will style the first column (usually ID) bold to act as a header. */
+     
+  td:first-child {
+    font-weight: 700;
+    color: var(--primary);
+    font-size: 1.1rem;
+    text-align: left;
+    border-bottom: 2px solid #f1f5f9;
+    margin-bottom: 5px;
+    padding-bottom: 10px;
+    display: block; /* Make ID sit on top line alone */
+  }
+  
+  /* Buttons in tables should be full width for easy tapping */
+  td button.btn {
+    width: 100%;
+    margin: 0;
+    justify-content: center;
+    padding: 10px;
+  }
+  
+  /* Specific Handy Adjustments */
+  .btn-group {
+    flex-direction: column;
+    width: 100%;
+  }
+  .btn-group .btn { width: 100%; }
+  
+  /* Forms */
+  input, select, textarea {
+    padding: 12px; /* Larger touch target */
+    font-size: 16px; /* Prevents iOS zoom on focus */
+  }
+  
+  /* Modals */
+  #managerVisitContent, #ticketProgressContent {
+    max-width: 95%;
+    padding: 1.5rem;
+    max-height: 85vh;
+  }
+}
+
+/* ================= SMALL MOBILE (Max 480px) ================= */
+@media (max-width: 480px) {
+  /* Stack stats on very small screens if needed, 
+     but 2-col usually fits. Let's keep 2-col but make text smaller */
+  .stat-box p { font-size: 1.4rem; }
+  .stat-box .label { font-size: 0.75rem; }
+  
+  .page-title { font-size: 1.1rem; }
+  
+  /* Adjust Admin Tabs */
+  .admin-nav-tab {
+    padding: 8px 14px;
+    font-size: 0.85rem;
+  }
+}
