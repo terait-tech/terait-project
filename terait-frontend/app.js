@@ -1,3 +1,4 @@
+const API_URL = 'https://terait-backend.onrender.com';
 // Safe storage for browser environment
 const storage = window.localStorage || {};
 
