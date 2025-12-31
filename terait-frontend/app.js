@@ -1635,7 +1635,7 @@ function setupEmployeeForm() {
   }
 
   if (saveBtn) {
-    saveBtn.onclick = () => {
+    saveBtn.onclick = async () => {
       const name = $("empName").value.trim();
       const email = $("empEmail").value.trim();
       const phone = $("empPhone") ? $("empPhone").value.trim() : '';
@@ -6376,3 +6376,4 @@ async function syncFromFirebase() {
 }
 // Run sync on load
 window.addEventListener('load', syncFromFirebase);
+
