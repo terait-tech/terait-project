@@ -6376,4 +6376,8 @@ async function syncFromFirebase() {
 }
 // Run sync on load
 window.addEventListener('load', syncFromFirebase);
+// Automatically fetch data from Firebase when the page opens
+window.addEventListener('DOMContentLoaded', () => {
+    syncFromFirebase();
+});
 
